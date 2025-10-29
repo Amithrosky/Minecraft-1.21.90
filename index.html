@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js;">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧱</text></svg>">
+    <title>Minecraft Installer (Unofficial)</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <style>
+        /* --- Material Design 3 Color Tokens --- */
+        :root {
+            /* Light Theme */
+            --md-light-primary: #6750A4; --md-light-on-primary: #FFFFFF; --md-light-primary-container: #EADDFF; --md-light-on-primary-container: #21005D; --md-light-surface: #FFFBFE; --md-light-on-surface: #1C1B1F; --md-light-on-surface-variant: #49454F; --md-light-outline: #79747E; --md-light-surface-container: #F3EDF7; --md-light-surface-container-highest: #E6E0E9; --md-light-scrim: #000000;
+            /* Light Theme RGB values for RGBA() transparency */
+            --md-light-surface-container-highest-rgb: 230, 224, 233;
+            --md-light-outline-rgb: 121, 116, 126;
+            --md-light-scrim-rgb: 0, 0, 0;
+
+            /* Dark Theme */
+            --md-dark-primary: #D0BCFF; --md-dark-on-primary: #381E72; --md-dark-primary-container: #4F388B; --md-dark-on-primary-container: #EADDFF; --md-dark-surface: #141218; --md-dark-on-surface: #E6E1E5; --md-dark-on-surface-variant: #CAC4D0; --md-dark-outline: #938F99; --md-dark-surface-container: #211F26; --md-dark-surface-container-highest: #36343B; --md-dark-scrim: #000000;
+            /* Dark Theme RGB values for RGBA() transparency */
+            --md-dark-surface-container-highest-rgb: 54, 52, 59;
+            --md-dark-outline-rgb: 147, 143, 153;
+            --md-dark-scrim-rgb: 0, 0, 0;
+        }
+
+        /* --- Global Styles --- */
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--color-on-surface);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow: hidden; /* Hide scrollbars from animated background */
+        }
+        
+        /* --- Feature 1: Animated Gradient Background --- */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, var(--color-primary-container), var(--color-surface), var(--color-primary));
+            background-size: 400% 400%;
+            animation: gradient-flow 15s ease infinite;
+            z-index: -1;
+        }
+
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Theme Application */
+        body { 
+            --color-primary: var(--md-light-primary); --color-on-primary: var(--md-light-on-primary); --color-primary-container: var(--md-light-primary-container); --color-on-primary-container: var(--md-light-on-primary-container); --color-surface: var(--md-light-surface); --color-on-surface: var(--md-light-on-surface); --color-on-surface-variant: var(--md-light-on-surface-variant); --color-outline: var(--md-light-outline); --color-surface-container: var(--md-light-surface-container); --color-surface-container-highest: var(--md-light-surface-container-highest); --color-scrim: var(--md-light-scrim);
+            /* Set RGB variables for Light mode */
+            --color-surface-container-highest-rgb: var(--md-light-surface-container-highest-rgb);
+            --color-outline-rgb: var(--md-light-outline-rgb);
+            --color-scrim-rgb: var(--md-light-scrim-rgb);
+        }
+        body.dark-mode { 
+            --color-primary: var(--md-dark-primary); --color-on-primary: var(--md-dark-on-primary); --color-primary-container: var(--md-dark-primary-container); --color-on-primary-container: var(--md-dark-on-primary-container); --color-surface: var(--md-dark-surface); --color-on-surface: var(--md-dark-on-surface); --color-on-surface-variant: var(--md-dark-on-surface-variant); --color-outline: var(--md-dark-outline); --color-surface-container: var(--md-dark-surface-container); --color-surface-container-highest: var(--md-dark-surface-container-highest); --color-scrim: var(--md-dark-scrim);
+            /* Set RGB variables for Dark mode */
+            --color-surface-container-highest-rgb: var(--md-dark-surface-container-highest-rgb);
+            --color-outline-rgb: var(--md-dark-outline-rgb);
+            --color-scrim-rgb: var(--md-dark-scrim-rgb);
+        }
+        
+        /* --- Main Container & Feature 2: Glassmorphism --- */
+        .container {
+            width: 100%; max-width: 420px; margin: 20px; padding: 24px;
+            background-color: rgba(var(--color-surface-container-highest-rgb), 0.7); /* Use RGB for opacity */
+            border: 1px solid rgba(var(--color-outline-rgb), 0.3);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-radius: 28px; text-align: center;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            /* Feature 3: Entrance Animation */
+            opacity: 0; transform: translateY(20px);
+            animation: fade-in-up 0.6s 0.2s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        @keyframes fade-in-up { to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Feature 10: Shake Animation --- */
+        .shake { animation: shake-horizontal 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake-horizontal { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
+        
+        /* --- Typography --- */
+        h1 { font-size: 1.8rem; font-weight: 500; margin: 0 0 4px 0; color: var(--color-on-surface); }
+        .version { font-size: 0.9rem; color: var(--color-on-surface-variant); margin-bottom: 24px; }
+        #statusText { font-size: 0.9rem; height: 20px; margin-top: 16px; color: var(--color-on-surface-variant); }
+
+        /* Theme Toggle & Tooltips (Feature 27) */
+        .tooltip-wrapper { position: relative; }
+        .tooltip { position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); background-color: #333; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; white-space: nowrap; opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0.2s; z-index: 10; }
+        .tooltip-wrapper:hover .tooltip { opacity: 1; visibility: visible; }
+        .theme-toggle { position: fixed; top: 20px; right: 20px; z-index: 5; width: 48px; height: 48px; border-radius: 50%; border: none; background-color: var(--color-surface-container-highest); color: var(--color-on-surface-variant); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+        
+        /* Buttons */
+        .m3-button, .m3-button-outlined { position: relative; width: 100%; padding: 16px 24px; font-size: 1rem; font-weight: 500; border: none; border-radius: 100px; cursor: pointer; outline: none; overflow: hidden; transition: background-color 0.3s ease; text-decoration: none; display: inline-block; }
+        .m3-button { background-color: var(--color-primary); color: var(--color-on-primary); }
+        /* Feature 11: Official Site Button */
+        .m3-button-outlined { background-color: transparent; color: var(--color-primary); border: 1px solid var(--color-outline); margin-top: 12px; }
+        .m3-button:disabled { background-color: rgba(var(--color-on-surface-rgb), 0.12); color: rgba(var(--color-on-surface-rgb), 0.38); cursor: not-allowed; }
+        .ripple { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.4); transform: scale(0); animation: ripple-effect 0.6s linear; }
+        @keyframes ripple-effect { to { transform: scale(4); opacity: 0; } }
+
+        /* Inputs & Checkboxes */
+        .input-wrapper { position: relative; margin-bottom: 16px; }
+        .password-input { width: 100%; padding: 16px; font-size: 1rem; border: 1px solid var(--color-outline); border-radius: 8px; background: transparent; color: var(--color-on-surface); outline: none; transition: border-color 0.2s; }
+        .password-input:focus { border-width: 2px; border-color: var(--color-primary); }
+        .password-toggle { position: absolute; top: 50%; right: 12px; transform: translateY(-50%); cursor: pointer; color: var(--color-on-surface-variant); user-select: none; }
+        .checkbox-wrapper { display: flex; align-items: center; justify-content: flex-start; margin: 16px 0; font-size: 0.9rem; color: var(--color-on-surface-variant); }
+        .checkbox-wrapper a { color: var(--color-primary); text-decoration: none; }
+        
+        /* Modals */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(var(--color-scrim-rgb), 0.5); align-items: center; justify-content: center; }
+        .modal-content { background-color: var(--color-surface-container); padding: 24px; border-radius: 28px; width: 90%; max-width: 500px; text-align: left; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-header h2 { margin: 0; font-size: 1.5rem; color: var(--color-on-surface);}
+        .close-button { cursor: pointer; font-size: 2rem; }
+        .modal-body { max-height: 60vh; overflow-y: auto; color: var(--color-on-surface-variant); /* Feature 7: Custom Scrollbar */ scrollbar-width: thin; scrollbar-color: var(--color-primary) transparent; }
+        
+        /* --- Feature 5: Toast Notification --- */
+        .toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background-color: #323232; color: #fff; padding: 12px 20px; border-radius: 24px; font-size: 0.9rem; z-index: 101; transition: bottom 0.5s ease; }
+        .toast.show { bottom: 30px; }
+        
+        /* Other Components */
+        .changelog { text-align: left; margin-top: 24px; border-radius: 12px; background-color: var(--color-primary-container); overflow: hidden; }
+        .changelog-header { padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--color-on-primary-container); }
+        .changelog-header .icon { transition: transform 0.3s ease; }
+        .changelog-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; padding: 0 16px; color: var(--color-on-primary-container); font-size: 0.9rem; }
+        .changelog-content ul { padding-left: 20px; margin: 0 0 16px 0; }
+        .changelog.open .changelog-content { max-height: 200px; }
+        .changelog.open .icon { transform: rotate(180deg); }
+        .download-view { display: none; text-align: center; }
+        .file-icon { font-size: 4rem; color: var(--color-primary); }
+        .download-countdown { font-size: 2rem; font-weight: 500; margin: 16px 0; color: var(--color-primary); }
+    </style>
+</head>
+<body class="dark-mode">
+
+    <div class="tooltip-wrapper">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            <span class="material-symbols-outlined">light_mode</span>
+        </button>
+        <div class="tooltip">Toggle Theme</div>
+    </div>
+
+    <main class="container">
+        <div id="authView">
+            <h1 id="welcomeMessage">Minecraft 1.21.90</h1>
+            <p class="version">Unofficial Installer of Minecraft</p>
+            <div class="input-wrapper">
+                <input type="password" id="passwordInput" class="password-input" placeholder="Enter Password" aria-label="Password">
+                <span class="material-symbols-outlined password-toggle" id="passwordToggle" role="button" aria-label="Toggle password visibility">visibility_off</span>
+            </div>
+            
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="tosCheckbox" style="margin-right: 8px;">
+                <label for="tosCheckbox">I agree to the <a href="#" id="tosLink">Terms of Service</a></label>
+            </div>
+            
+            <div class="checkbox-wrapper">
+                <input type="checkbox" id="rememberMeCheckbox" style="margin-right: 8px;">
+                <label for="rememberMeCheckbox">Remember me on this device</label>
+            </div>
+
+            <button class="m3-button" id="authBtn" disabled>Authenticate</button>
+            <a href="https://www.minecraft.net/en-us" target="_blank" class="m3-button-outlined">Visit Official Site</a>
+            <p id="statusText">Please agree to the ToS to continue.</p>
+        </div>
+
+        <div id="downloadView" class="download-view">
+            <span class="material-symbols-outlined file-icon">verified</span>
+            <h1>Ready to Download</h1>
+            <p class="version">minecraft-1.21.90-Premium.apk</p>
+            <p id="integrityCheckText" style="font-size: 0.9rem; color: var(--color-on-surface-variant);"></p>
+            <p id="countdown" class="download-countdown"></p>
+            <button class="m3-button" id="downloadBtn">Download Now</button>
+            <p id="downloadStatusText"></p>
+        </div>
+
+        <div class="changelog" id="changelog">
+            <div class="changelog-header" id="changelogHeader"><strong>What's New</strong><span class="material-symbols-outlined icon">expand_more</span></div>
+            <div class="changelog-content"><ul><li>Enhanced performance and stability.</li><li>Added support for new cosmic shaders.</li><li>Fixed a bug with planetary rendering.</li></ul></div>
+        </div>
+    </main>
+
+    <div id="tosModal" class="modal" role="dialog" aria-modal="true"><div class="modal-content"><div class="modal-header"><h2>Terms of Service</h2><span class="close-button" data-modal="tosModal">&times;</span></div><div class="modal-body"><p>This is an unofficial way to download Minecraft 1.21.90 (Premium). This app is scanned by Avast antivirus but we will not responsible if any virus arise. So it is better to scan by yourshelf before installing. Follow me in Instagram - @amithrosky</p></div></div></div>
+    <div id="systemModal" class="modal" role="dialog" aria-modal="true"><div class="modal-content"><div class="modal-header"><h2>System Info</h2><span class="close-button" data-modal="systemModal">&times;</span></div><div class="modal-body" id="systemInfoBody"></div></div></div>
+    
+    <div class="toast" id="toast">Copied!</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- CONFIG & STATE ---
+            const correctPassword = atob('MjQ0NDY2NjY2'); // Decodes to '244466666'
+            const elements = {
+                body: document.body,
+                authView: document.getElementById('authView'),
+                downloadView: document.getElementById('downloadView'),
+                passwordInput: document.getElementById('passwordInput'),
+                authBtn: document.getElementById('authBtn'),
+                statusText: document.getElementById('statusText'),
+                downloadBtn: document.getElementById('downloadBtn'),
+                countdown: document.getElementById('countdown'),
+                welcomeMessage: document.getElementById('welcomeMessage'),
+                tosCheckbox: document.getElementById('tosCheckbox'),
+                rememberMeCheckbox: document.getElementById('rememberMeCheckbox'),
+                themeToggle: document.getElementById('themeToggle'),
+                toast: document.getElementById('toast'),
+            };
+
+            // --- INITIALIZATION ---
+            function init() {
+                initTheme();
+                initWelcomeMessage();
+                initEventListeners();
+                checkRememberMe();
+            }
+
+            // --- THEME & UI ---
+            function initTheme() {
+                // Default to dark theme if nothing is saved in localStorage
+                const savedTheme = localStorage.getItem('theme') || 'dark';
+                applyTheme(savedTheme);
+            }
+
+            function applyTheme(theme) {
+                const icon = elements.themeToggle.querySelector('.material-symbols-outlined');
+                if (theme === 'dark') {
+                    elements.body.classList.add('dark-mode');
+                    icon.textContent = 'light_mode';
+                } else {
+                    elements.body.classList.remove('dark-mode');
+                    icon.textContent = 'dark_mode';
+                }
+            }
+            
+            function toggleTheme() {
+                const isDarkMode = elements.body.classList.contains('dark-mode');
+                const newTheme = isDarkMode ? 'light' : 'dark';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
+                vibrate();
+            }
+
+            function initWelcomeMessage() {
+                const hour = new Date().getHours();
+                let greeting = "Welcome";
+                if (hour < 12) greeting = "Good Morning";
+                else if (hour < 18) greeting = "Good Afternoon";
+                else greeting = "Good Evening";
+                elements.welcomeMessage.textContent = greeting;
+            }
+            
+            function showToast(message) {
+                elements.toast.textContent = message;
+                elements.toast.classList.add('show');
+                setTimeout(() => { elements.toast.classList.remove('show'); }, 2000);
+            }
+            
+            function animateShake(element) {
+                element.classList.add('shake');
+                setTimeout(() => element.classList.remove('shake'), 500);
+            }
+
+            // --- AUTHENTICATION & STATE MANAGEMENT ---
+            function checkRememberMe() {
+                const rememberedPass = localStorage.getItem('rememberedPass');
+                if (rememberedPass) {
+                    elements.passwordInput.value = atob(rememberedPass);
+                    elements.rememberMeCheckbox.checked = true;
+                }
+            }
+
+            function handleAuthentication() {
+                vibrate();
+                if (elements.passwordInput.value.toLowerCase() === 'mojang') {
+                    elements.statusText.textContent = 'Nice find! But that\'s not the password. 😉';
+                    animateShake(elements.passwordInput.parentElement);
+                    return;
+                }
+
+                if (elements.passwordInput.value === correctPassword) {
+                    elements.statusText.textContent = 'Authentication successful!';
+                    elements.statusText.style.color = 'var(--color-primary)';
+                    
+                    if (elements.rememberMeCheckbox.checked) {
+                        localStorage.setItem('rememberedPass', btoa(elements.passwordInput.value));
+                    } else {
+                        localStorage.removeItem('rememberedPass');
+                    }
+                    
+                    setTimeout(() => {
+                        elements.authView.style.display = 'none';
+                        elements.downloadView.style.display = 'block';
+                        runFileIntegrityCheck();
+                    }, 1000);
+                } else {
+                    elements.statusText.textContent = 'Incorrect password. Please try again.';
+                    elements.statusText.style.color = '#F2B8B5';
+                    animateShake(elements.passwordInput.parentElement);
+                }
+            }
+
+            // --- DOWNLOAD PROCESS ---
+            function runFileIntegrityCheck() {
+                const integrityText = document.getElementById('integrityCheckText');
+                integrityText.textContent = "Verifying file integrity...";
+                setTimeout(() => {
+                    integrityText.innerHTML = "Verifying file integrity... <span style='color: limegreen;'>✓</span>";
+                }, 1500);
+            }
+            
+            function startDownload() {
+                vibrate();
+                elements.downloadBtn.disabled = true;
+                const downloadStatus = document.getElementById('downloadStatusText');
+                downloadStatus.textContent = "Initiating secure download...";
+                
+                let count = 3;
+                elements.countdown.textContent = count;
+                const interval = setInterval(() => {
+                    count--;
+                    if (count > 0) {
+                        elements.countdown.textContent = count;
+                    } else {
+                        clearInterval(interval);
+                        elements.countdown.textContent = "🚀";
+                        downloadStatus.textContent = 'Redirecting now!';
+                        confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+                        window.location.href = "https://www.mediafire.com/file/nlxqka702auu2pv/minecraft-1.21.90-Premium.apk/file";
+                    }
+                }, 1000);
+            }
+            
+            // --- UTILITIES & HELPERS ---
+            function vibrate() {
+                if ('vibrate' in navigator) navigator.vibrate(50);
+            }
+            
+            // --- EVENT LISTENERS ---
+            function initEventListeners() {
+                elements.themeToggle.addEventListener('click', toggleTheme);
+                elements.authBtn.addEventListener('click', handleAuthentication);
+                elements.downloadBtn.addEventListener('click', startDownload);
+
+                elements.tosCheckbox.addEventListener('change', () => {
+                    elements.authBtn.disabled = !elements.tosCheckbox.checked;
+                    elements.statusText.textContent = elements.tosCheckbox.checked ? "Ready for authentication." : "Please agree to the ToS to continue.";
+                });
+                
+                document.getElementById('passwordToggle').addEventListener('click', (event) => {
+                    const isPassword = elements.passwordInput.type === 'password';
+                    elements.passwordInput.type = isPassword ? 'text' : 'password';
+                    event.target.textContent = isPassword ? 'visibility' : 'visibility_off';
+                });
+                
+                document.getElementById('tosLink').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('tosModal').style.display = 'flex';
+                });
+                
+                document.getElementById('changelogHeader').addEventListener('click', () => {
+                    document.getElementById('changelog').classList.toggle('open');
+                });
+
+                document.body.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('close-button')) {
+                        document.getElementById(e.target.dataset.modal).style.display = 'none';
+                    }
+                    if (e.target.classList.contains('modal')) {
+                        e.target.style.display = 'none';
+                    }
+                });
+                
+                elements.passwordInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !elements.authBtn.disabled) {
+                        handleAuthentication();
+                    }
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === "Escape") {
+                        document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
+                    }
+                });
+            }
+
+            init();
+        });
+    </script>
+</body>
+</html>
